@@ -27,19 +27,17 @@ visited = set()
 def BFSTraversal(currentX, currentY, cost):
     
     # ADD PATH
-    queue = deque([(startX, startY, 0 [startX, startY])])
+    queue = deque([(startX, startY, 0, [(startX, startY)])])
     
     visited.add((startX, startY))
     
-    directions = [(-1, 0), (1, 0),(0, -1), (0, 1)]
+    directions = [(0, -1), (0, 1), (1, 0), (-1, 0)]
     
     while queue:
-        currentX, currentY, cost = queue.popleft()
-        
-        print(cost)
+        currentX, currentY, cost, path = queue.popleft()
         
         if currentX == endX and currentY == endY:
-            return cost + grid[currentX][currentY]
+            return cost + grid[currentX][currentY], path
         
         for dx, dy in directions:
             newX = currentX + dx
@@ -51,10 +49,19 @@ def BFSTraversal(currentX, currentY, cost):
                 
                 if grid[newX][newY] != "X":
                     visited.add((newX, newY))
-                    queue.append((newX, newY, cost + grid[currentX][currentY]))  
+                    
+                    newPath = path + [(newX, newY)]
+                    
+                    queue.append((newX, newY, cost + grid[currentX][currentY], newPath))  
                     
     return 999999
 
-cost = BFSTraversal(startX, startY, 0)         
+path = BFSTraversal(startX, startY, 0)         
 
-print(cost)  
+print(path[1])  
+
+for i, j in path[1]:
+    grid[i][j] = "*"
+    
+for i in range(len(grid)):
+    print(grid[i])    
