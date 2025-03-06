@@ -1,3 +1,5 @@
+from collections import deque
+
 STUDENT_ID = 'a1885080'
 DEGREE = 'UG'
 
@@ -22,50 +24,37 @@ endY = 9
 
 visited = set()
 
-
-def traverse(currentX, currentY, cost):
-
-    # Check bounds
-
-    if currentX < 0 or currentX >= len(grid):
-        return 99999999
-    elif currentY < 0 or currentY >= len(grid[0]):
-        return 99999999
-
-    if grid[currentX][currentY] == "X":
-        return 99999999
-
-    # No duplicate pathing
-
-    if (currentX, currentY) in visited:
-        return 99999999
-
-
-    if currentX == endX and currentY == endY:
-        return cost + grid[currentX][currentY]
-
-    visited.add((currentX, currentY))
-
-    # Split the location into four new directions, keeping track of locations that have already been visited
-
-    print("decision tree")
+def BFSTraversal(currentX, currentY, cost):
     
-    # Up
-    upCost = traverse(currentX, currentY + 1, cost + grid[currentX][currentY])
-
-    # Down
-    downCost = traverse(currentX, currentY - 1, cost + grid[currentX][currentY])
-
-    # Left
-    leftCost = traverse(currentX - 1, currentY, cost + grid[currentX][currentY])
-
-    # Right
-    rightCost = traverse(currentX + 1, currentY, cost + grid[currentX][currentY])
+    # ADD PATH
+    queue = deque([(startX, startY, 0 [startX, startY])])
     
-    visited.remove((currentX, currentY))
+    visited.add((startX, startY))
     
-    return min(upCost, downCost, leftCost, rightCost)
+    directions = [(-1, 0), (1, 0),(0, -1), (0, 1)]
+    
+    while queue:
+        currentX, currentY, cost = queue.popleft()
+        
+        print(cost)
+        
+        if currentX == endX and currentY == endY:
+            return cost + grid[currentX][currentY]
+        
+        for dx, dy in directions:
+            newX = currentX + dx
+            newY = currentY + dy
+            
+            # print(newX, newY)
+            
+            if (newX >= 0 and newX < len(grid)) and (newY >= 0 and newY < len(grid[0])) and (newX, newY) not in visited:
+                
+                if grid[newX][newY] != "X":
+                    visited.add((newX, newY))
+                    queue.append((newX, newY, cost + grid[currentX][currentY]))  
+                    
+    return 999999
 
-cost = traverse(startX, startY, 0)
+cost = BFSTraversal(startX, startY, 0)         
 
-print(cost)
+print(cost)  
