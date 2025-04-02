@@ -4,88 +4,93 @@ DEGREE = 'UG'
 from collections import deque
 from sys import argv
 
-# Defining inputs
-mode = argv[1]
-mapPath = argv[2]
-algorithm = argv[3]
-if (algorithm == "astar"):
-    heuristic = argv[4]
+if __name__ == "__main__":
 
-# Extracting map file
-mapFile = open(mapPath, "r")
-boardSize = next(mapFile).strip().split()
-startCoords = next(mapFile).strip().split()
-endCoords = next(mapFile).strip().split()
+    # Defining inputs
+    mode = argv[1]
+    mapPath = argv[2]
+    algorithm = argv[3]
+    if (algorithm == "astar"):
+        heuristic = argv[4]
 
-grid = []
+    # Extracting map file
+    mapFile = open(mapPath, "r")
+    boardSize = next(mapFile).strip().split()
+    startCoords = next(mapFile).strip().split()
+    endCoords = next(mapFile).strip().split()
 
-for line in mapFile:
-    row = line.strip().split()
-    grid.append(row)
+    grid = []
 
-for line in grid:
-    print(line)
-    
-# Defining map information
-boardX = int(boardSize[0])
-boardY = int(boardSize[1])
+    for line in mapFile:
+        row = line.strip().split()
+        grid.append(row)
 
-startX = int(startCoords[0]) - 1
-startY = int(startCoords[1]) - 1
-
-endX = int(endCoords[0]) - 1
-endY = int(endCoords[1]) - 1
-
-visited = set()
-
-if (algorithm == "bfs"):
-    def BFSTraversal(currentX, currentY, cost):
+    for line in grid:
+        print(line)
         
-        # ADD PATH
-        queue = deque([(startX, startY, 0, [(startX, startY)])])
-        
-        visited.add((startX, startY))
-        
-        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-        
-        while queue:
-            currentX, currentY, cost, path = queue.popleft()
+    # Defining map information
+    boardX = int(boardSize[0])
+    boardY = int(boardSize[1])
+
+    startX = int(startCoords[0]) - 1
+    startY = int(startCoords[1]) - 1
+
+    endX = int(endCoords[0]) - 1
+    endY = int(endCoords[1]) - 1
+
+    visited = set()
+
+    if (algorithm == "bfs"):
+        def BFSTraversal(currentX, currentY, cost):
             
-            if currentX == endX and currentY == endY:
-                return cost + int(grid[currentX][currentY]), path
+            # ADD PATH
+            queue = deque([(startX, startY, 0, [(startX, startY)])])
             
-            for dx, dy in directions:
-                newX = currentX + dx
-                newY = currentY + dy
+            visited.add((startX, startY))
+            
+            directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+            
+            while queue:
+                currentX, currentY, cost, path = queue.popleft()
                 
-                # print(newX, newY)
+                if currentX == endX and currentY == endY:
+                    return cost + int(grid[currentX][currentY]), path
                 
-                if (newX >= 0 and newX < boardX) and (newY >= 0 and newY < boardY) and (newX, newY) not in visited:
+                for dx, dy in directions:
+                    newX = currentX + dx
+                    newY = currentY + dy
                     
-                    if grid[newX][newY] != 'X':
-                        visited.add((newX, newY))
+                    # print(newX, newY)
+                    
+                    if (newX >= 0 and newX < boardX) and (newY >= 0 and newY < boardY) and (newX, newY) not in visited:
                         
-                        newPath = path + [(newX, newY)]
-                        
-                        queue.append((newX, newY, cost + int(grid[currentX][currentY]), newPath))  
-                        
-        return 999999
-    
-    path = BFSTraversal(startX, startY, 0)  
+                        if grid[newX][newY] != 'X':
+                            visited.add((newX, newY))
+                            
+                            newPath = path + [(newX, newY)]
+                            
+                            queue.append((newX, newY, cost + int(grid[currentX][currentY]), newPath))  
+                            
+            return 999999
+        
+        path = BFSTraversal(startX, startY, 0)  
 
-       
-if (path == 999999):
-    print("null")
-else: 
-    print(path[1])
-    
-    for i, j in path[1]:
-        grid[i][j] = "*"
-    
-    for i in range(boardX):
-        for j in range(boardY):
-            print(grid[i][j], end=" ")    
-        print()
+        
+    if (path == 999999):
+        print("null")
+    else: 
+        print(path[1])
+        
+        for i, j in path[1]:
+            grid[i][j] = "*"
+        
+        for i in range(boardX):
+            for j in range(boardY):
+                print(grid[i][j], end=" ")    
+            print()
+        
+
+
 
 
     
