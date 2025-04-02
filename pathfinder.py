@@ -25,8 +25,8 @@ if __name__ == "__main__":
         row = line.strip().split()
         grid.append(row)
 
-    for line in grid:
-        print(line)
+    # for line in grid:
+    #     print(line)
         
     # Defining map information
     boardX = int(boardSize[0])
@@ -79,7 +79,7 @@ if __name__ == "__main__":
     if (path == 999999):
         print("null")
     else: 
-        print(path[1])
+        # print(path[1])
         
         for i, j in path[1]:
             grid[i][j] = "*"
