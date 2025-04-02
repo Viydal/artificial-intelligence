@@ -6,13 +6,13 @@ from sys import argv
 
 # Defining inputs
 mode = argv[1]
-map = argv[2]
+mapPath = argv[2]
 algorithm = argv[3]
 if (algorithm == "astar"):
     heuristic = argv[4]
 
 # Extracting map file
-mapFile = open(map, "r")
+mapFile = open(mapPath, "r")
 boardSize = next(mapFile).strip().split()
 startCoords = next(mapFile).strip().split()
 endCoords = next(mapFile).strip().split()
