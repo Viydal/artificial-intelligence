@@ -1,70 +1,93 @@
 from collections import deque
+from sys import argv
 
 STUDENT_ID = 'a1885080'
 DEGREE = 'UG'
 
-# grid = [
-#     [1, 1, 1, 1, 1, 1, 4, 7, 8, "X"],
-#     [1, 1, 1, 1, 1, 1, 1, 5, 8, 8],
-#     [1, 1, 1, 1, 1, 1, 1, 1, 1, 7],
-#     [1, 1, 1, 1, 1, "X", 1, 1, 1, 6],
-#     [1, 1, 1, 1, 1, "X", 1, 1, 1, 1],
-#     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-#     [6, 1, 1, 1, 1, "X", 1, 1, 1, 1],
-#     [7, 7, 1, "X", "X", "X", 1, 1, 1, 1],
-#     [8, 8, 1, 1, 1, 1, 1, 1, 1, 1],
-#     ["X", 8, 7, 1, 1, 1, 1, 1, 1, 1]
-# ]
+# Defining inputs
+mode = argv[1]
+map = argv[2]
+algorithm = argv[3]
+heuristic = argv[4]
 
-mapFile = open("map.txt", "r")
-print(mapFile.read())
+# Extracting map file
+mapFile = open(map, "r")
+boardSize = next(mapFile).strip().split()
+startCoords = next(mapFile).strip().split()
+endCoords = next(mapFile).strip().split()
 
-startX = 0
-startY = 0
+grid = []
 
-endX = 9
-endY = 9
+for line in mapFile:
+    row = line.strip().split()
+    grid.append(row)
+
+for line in grid:
+    print(line)
+    
+# Defining map information
+boardX = int(boardSize[0])
+boardY = int(boardSize[1])
+
+startX = int(startCoords[0]) - 1
+startY = int(startCoords[1]) - 1
+
+endX = int(endCoords[0]) - 1
+endY = int(endCoords[1]) - 1
 
 visited = set()
 
-def BFSTraversal(currentX, currentY, cost):
-    
-    # ADD PATH
-    queue = deque([(startX, startY, 0, [(startX, startY)])])
-    
-    visited.add((startX, startY))
-    
-    directions = [(0, -1), (0, 1), (1, 0), (-1, 0)]
-    
-    while queue:
-        currentX, currentY, cost, path = queue.popleft()
+if (algorithm == "bfs"):
+    def BFSTraversal(currentX, currentY, cost):
         
-        if currentX == endX and currentY == endY:
-            return cost + grid[currentX][currentY], path
+        # ADD PATH
+        queue = deque([(startX, startY, 0, [(startX, startY)])])
         
-        for dx, dy in directions:
-            newX = currentX + dx
-            newY = currentY + dy
+        visited.add((startX, startY))
+        
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        
+        while queue:
+            currentX, currentY, cost, path = queue.popleft()
             
-            # print(newX, newY)
+            if currentX == endX and currentY == endY:
+                return cost + int(grid[currentX][currentY]), path
             
-            if (newX >= 0 and newX < len(grid)) and (newY >= 0 and newY < len(grid[0])) and (newX, newY) not in visited:
+            for dx, dy in directions:
+                newX = currentX + dx
+                newY = currentY + dy
                 
-                if grid[newX][newY] != "X":
-                    visited.add((newX, newY))
+                # print(newX, newY)
+                
+                if (newX >= 0 and newX < boardX) and (newY >= 0 and newY < boardY) and (newX, newY) not in visited:
                     
-                    newPath = path + [(newX, newY)]
-                    
-                    queue.append((newX, newY, cost + grid[currentX][currentY], newPath))  
-                    
-    return 999999
-
-path = BFSTraversal(startX, startY, 0)         
-
-print(path[1])  
-
-for i, j in path[1]:
-    grid[i][j] = "*"
+                    if grid[newX][newY] != 'X':
+                        visited.add((newX, newY))
+                        
+                        newPath = path + [(newX, newY)]
+                        
+                        queue.append((newX, newY, cost + int(grid[currentX][currentY]), newPath))  
+                        
+        return 999999
     
-for i in range(len(grid)):
-    print(grid[i])    
+    path = BFSTraversal(startX, startY, 0)  
+
+       
+if (path == 999999):
+    print("null")
+else: 
+    print(path[1])
+    
+    for i, j in path[1]:
+        grid[i][j] = "*"
+    
+    for i in range(boardX):
+        for j in range(boardY):
+            print(grid[i][j], end=" ")    
+        print()
+
+
+    
+
+
+            
