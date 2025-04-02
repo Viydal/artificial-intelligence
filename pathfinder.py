@@ -8,7 +8,8 @@ from sys import argv
 mode = argv[1]
 map = argv[2]
 algorithm = argv[3]
-heuristic = argv[4]
+if (algorithm == "astar"):
+    heuristic = argv[4]
 
 # Extracting map file
 mapFile = open(map, "r")
