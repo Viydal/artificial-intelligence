@@ -1,8 +1,8 @@
-from collections import deque
-from sys import argv
-
 STUDENT_ID = 'a1885080'
 DEGREE = 'UG'
+
+from collections import deque
+from sys import argv
 
 # Defining inputs
 mode = argv[1]
