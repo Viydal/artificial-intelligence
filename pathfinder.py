@@ -2,6 +2,7 @@ STUDENT_ID = 'a1885080'
 DEGREE = 'UG'
 
 from collections import deque
+import heapq
 from sys import argv
 import numpy as np
 
@@ -25,9 +26,6 @@ if __name__ == "__main__":
     for line in mapFile:
         row = line.strip().split()
         grid.append(row)
-
-    # for line in grid:
-    #     print(line)
         
     # Defining map information
     boardX = int(boardSize[0])
@@ -38,12 +36,12 @@ if __name__ == "__main__":
 
     endX = int(endCoords[0]) - 1
     endY = int(endCoords[1]) - 1
-
-    visited = set()
     
     gridVisit = np.zeros([boardX, boardY], dtype=int)
 
     if (algorithm == "bfs"):
+        visited = set()
+        
         def BFSTraversal(currentX, currentY):
             queue = deque([(startX, startY, [(startX, startY)])])
             visited.add((startX, startY))
@@ -74,9 +72,44 @@ if __name__ == "__main__":
         
         path = BFSTraversal(startX, startY)  
         
-    if (algorithm == "ucs"):
+    if (algorithm == "ucs"):    
+        visited = set()
+            
         def UCSTraversal(currentX, currentY):
-            queue = deque([(startX, startY, [(startX, startY)])])
+            queue = []
+            
+            heapq.heappush(queue, (0, startX, startY, [(startX, startY)]))
+            
+            print(queue[0])
+            
+            visited.add((startX, startY))
+            
+            directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+            
+            while queue:
+                cost, currentX, currentY, path = heapq.heappop(queue)
+                print(path)
+                
+                gridVisit[currentX, currentY] += 1
+                
+                if currentX == endX and currentY == endY:
+                    return path
+                
+                for dx, dy in directions:
+                    newX = currentX + dx
+                    newY = currentY + dy
+                    
+                    if (newX >= 0 and newX < boardX) and (newY >= 0 and newY < boardY) and (newX, newY) not in visited:
+                        
+                        if grid[newX][newY] != 'X':
+                            
+                            newPath = path + [(newX, newY)]
+                            heapq.heappush(queue, (cost + int(grid[newX][newY]), newX, newY, newPath))  
+                     
+                visited.add((currentX, currentY))        
+            return None
+        
+        path = UCSTraversal(startX, startY)
 
     if (algorithm == "astar"):
         b = 3
