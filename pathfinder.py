@@ -5,6 +5,7 @@ from collections import deque
 import heapq
 from sys import argv
 import numpy as np
+from itertools import count
 
 if __name__ == "__main__":
 
@@ -71,16 +72,17 @@ if __name__ == "__main__":
         
     if (algorithm == "ucs"):    
         visited = set()
+        counter = count()
             
         def UCSTraversal(currentX, currentY):
             queue = []
-            heapq.heappush(queue, (0, startX, startY, [(startX, startY)]))
+            heapq.heappush(queue, (0, next(counter), startX, startY, [(startX, startY)]))
             
             visited.add((startX, startY))
             directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
             
             while queue:
-                cost, currentX, currentY, path = heapq.heappop(queue)
+                cost, _, currentX, currentY, path = heapq.heappop(queue)
                 gridVisit[currentX, currentY] += 1
                 
                 # print(path, cost)
@@ -102,7 +104,7 @@ if __name__ == "__main__":
                             else:
                                 newCost = cost + (int(grid[newX][newY]) - int(grid[currentX][currentY])) + 1
                                 
-                            heapq.heappush(queue, (newCost, newX, newY, newPath))  
+                            heapq.heappush(queue, (newCost, next(counter), newX, newY, newPath))  
                      
                 visited.add((currentX, currentY))        
             return None
