@@ -86,7 +86,7 @@ if __name__ == "__main__":
                 # print(path, cost)
                 
                 if currentX == endX and currentY == endY:
-                    print(cost)
+                    # print(cost)
                     return path
                 
                 for dx, dy in directions:
