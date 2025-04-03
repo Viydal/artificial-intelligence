@@ -6,6 +6,105 @@ import heapq
 from sys import argv
 import numpy as np
 from itertools import count
+import math
+        
+
+def BFS(currentX, currentY):
+    queue = deque([(startX, startY, [(startX, startY)])])
+    visited.add((startX, startY))
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+            
+    while queue:
+        currentX, currentY, path = queue.popleft()
+        gridVisit[currentX, currentY] += 1
+        
+        if currentX == endX and currentY == endY:
+            return path
+        
+        for dx, dy in directions:
+            newX = currentX + dx
+            newY = currentY + dy
+            
+            if (newX >= 0 and newX < boardX) and (newY >= 0 and newY < boardY) and (newX, newY) not in visited:
+                if grid[newX][newY] != 'X':
+                    newPath = path + [(newX, newY)]
+                    queue.append((newX, newY, newPath))  
+                     
+        visited.add((currentX, currentY))        
+    return None
+        
+def UCS(currentX, currentY):
+    queue = []
+    heapq.heappush(queue, (0, next(counter), startX, startY, [(startX, startY)]))
+    visited.add((startX, startY))
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    
+    while queue:
+        cost, _, currentX, currentY, path = heapq.heappop(queue)
+        gridVisit[currentX, currentY] += 1
+        
+        if currentX == endX and currentY == endY:
+            return path
+        
+        for dx, dy in directions:
+            newX = currentX + dx
+            newY = currentY + dy
+            
+            if (newX >= 0 and newX < boardX) and (newY >= 0 and newY < boardY) and (newX, newY) not in visited:
+                if grid[newX][newY] != 'X':
+                    if (int(grid[newX][newY]) <= int(grid[currentX][currentY])):
+                        newCost = cost + 1
+                    else:
+                        newCost = cost + (int(grid[newX][newY]) - int(grid[currentX][currentY])) + 1
+                        
+                    newPath = path + [(newX, newY)]
+                    heapq.heappush(queue, (newCost, next(counter), newX, newY, newPath))  
+                
+        visited.add((currentX, currentY))      
+    return None
+        
+def Astar(currentX, currentY):
+    queue = []
+    heapq.heappush(queue, (0, next(counter), startX, startY, [(startX, startY)]))
+    visited.add((startX, startY))
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    
+    while queue:
+        cost, _, currentX, currentY, path = heapq.heappop(queue)
+        gridVisit[currentX, currentY] += 1
+        
+        if currentX == endX and currentY == endY:
+            return path
+        
+        for dx, dy in directions:
+            newX = currentX + dx
+            newY = currentY + dy
+            
+            if (newX >= 0 and newX < boardX) and (newY >= 0 and newY < boardY) and (newX, newY) not in visited:
+                if grid[newX][newY] != 'X':
+                    if (int(grid[newX][newY]) <= int(grid[currentX][currentY])):
+                        newCost = cost + 1
+                    else:
+                        newCost = cost + (int(grid[newX][newY]) - int(grid[currentX][currentY])) + 1
+                        
+                    newPath = path + [(newX, newY)]
+                    heapq.heappush(queue, (newCost + HeuristicFunction(newX, newY, endX, endY), next(counter), newX, newY, newPath))  
+                
+        visited.add((currentX, currentY))      
+    return None
+
+def HeuristicFunction(currentX, currentY, endX, endY):
+    point1 = [currentX, currentY]
+    point2 = [endX, endY]
+    distance = 0
+    if (heuristic == "euclidean"):
+        distance = math.dist(point1, point2)
+    elif (heuristic == "manhattan"):
+        distance = abs(currentX - endX) + abs(currentY - endY)
+    else:
+        print("error")
+        
+    return distance
 
 if __name__ == "__main__":
 
@@ -38,81 +137,19 @@ if __name__ == "__main__":
     endX = int(endCoords[0]) - 1
     endY = int(endCoords[1]) - 1
     
+    visited = set()
+    counter = count()
+    
     gridVisit = np.zeros([boardX, boardY], dtype=int)
 
     if (algorithm == "bfs"):
-        visited = set()
+        path = BFS(startX, startY)  
         
-        def BFSTraversal(currentX, currentY):
-            queue = deque([(startX, startY, [(startX, startY)])])
-            visited.add((startX, startY))
-            
-            directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-            
-            while queue:
-                currentX, currentY, path = queue.popleft()
-                gridVisit[currentX, currentY] += 1
-                
-                if currentX == endX and currentY == endY:
-                    return path
-                
-                for dx, dy in directions:
-                    newX = currentX + dx
-                    newY = currentY + dy
-                    
-                    if (newX >= 0 and newX < boardX) and (newY >= 0 and newY < boardY) and (newX, newY) not in visited:
-                        if grid[newX][newY] != 'X':
-                            newPath = path + [(newX, newY)]
-                            queue.append((newX, newY, newPath))  
-                     
-                visited.add((currentX, currentY))        
-            return None
-        
-        path = BFSTraversal(startX, startY)  
-        
-    if (algorithm == "ucs"):    
-        visited = set()
-        counter = count()
-            
-        def UCSTraversal(currentX, currentY):
-            queue = []
-            heapq.heappush(queue, (0, next(counter), startX, startY, [(startX, startY)]))
-            
-            visited.add((startX, startY))
-            directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-            
-            while queue:
-                cost, _, currentX, currentY, path = heapq.heappop(queue)
-                gridVisit[currentX, currentY] += 1
-                
-                # print(path, cost)
-                
-                if currentX == endX and currentY == endY:
-                    # print(cost)
-                    return path
-                
-                for dx, dy in directions:
-                    newX = currentX + dx
-                    newY = currentY + dy
-                    
-                    if (newX >= 0 and newX < boardX) and (newY >= 0 and newY < boardY) and (newX, newY) not in visited:
-                        if grid[newX][newY] != 'X':
-                            newPath = path + [(newX, newY)]
-                            
-                            if (int(grid[newX][newY]) <= int(grid[currentX][currentY])):
-                                newCost = cost + 1
-                            else:
-                                newCost = cost + (int(grid[newX][newY]) - int(grid[currentX][currentY])) + 1
-                                
-                            heapq.heappush(queue, (newCost, next(counter), newX, newY, newPath))  
-                     
-                visited.add((currentX, currentY))        
-            return None
-        
-        path = UCSTraversal(startX, startY)
+    elif (algorithm == "ucs"):    
+        path = UCS(startX, startY)
 
-    if (algorithm == "astar"):
-        b = 3
+    elif (algorithm == "astar"):            
+        path = Astar(startX, startY)
         
     if (mode == "release"):
         if (path == None):
