@@ -65,16 +65,20 @@ def UCS(currentX, currentY):
         
 def Astar(currentX, currentY):
     queue = []
-    heapq.heappush(queue, (0, next(counter), startX, startY, [(startX, startY)]))
+    heapq.heappush(queue, (0, next(counter), 0, startX, startY, [(startX, startY)]))
     visited.add((startX, startY))
     directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
     
     while queue:
-        cost, _, currentX, currentY, path = heapq.heappop(queue)
-        gridVisit[currentX, currentY] += 1
+        funcValue, _, cost, currentX, currentY, path = heapq.heappop(queue)
+        
+        # print(path, cost)
         
         if currentX == endX and currentY == endY:
             return path
+        
+        visited.add((currentX, currentY))
+        gridVisit[currentX, currentY] += 1
         
         for dx, dy in directions:
             newX = currentX + dx
@@ -88,9 +92,10 @@ def Astar(currentX, currentY):
                         newCost = cost + (int(grid[newX][newY]) - int(grid[currentX][currentY])) + 1
                         
                     newPath = path + [(newX, newY)]
-                    heapq.heappush(queue, (newCost + HeuristicFunction(newX, newY, endX, endY), next(counter), newX, newY, newPath))  
+                    
+                    funcValue = newCost + HeuristicFunction(newX, newY, endX, endY)
+                    heapq.heappush(queue, (funcValue, next(counter), newCost, newX, newY, newPath))  
                 
-        visited.add((currentX, currentY))      
     return None
 
 def HeuristicFunction(currentX, currentY, endX, endY):
