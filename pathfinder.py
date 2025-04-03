@@ -50,7 +50,6 @@ if __name__ == "__main__":
             
             while queue:
                 currentX, currentY, path = queue.popleft()
-                
                 gridVisit[currentX, currentY] += 1
                 
                 if currentX == endX and currentY == endY:
@@ -61,9 +60,7 @@ if __name__ == "__main__":
                     newY = currentY + dy
                     
                     if (newX >= 0 and newX < boardX) and (newY >= 0 and newY < boardY) and (newX, newY) not in visited:
-                        
                         if grid[newX][newY] != 'X':
-                            
                             newPath = path + [(newX, newY)]
                             queue.append((newX, newY, newPath))  
                      
@@ -77,22 +74,19 @@ if __name__ == "__main__":
             
         def UCSTraversal(currentX, currentY):
             queue = []
-            
             heapq.heappush(queue, (0, startX, startY, [(startX, startY)]))
             
-            print(queue[0])
-            
             visited.add((startX, startY))
-            
             directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
             
             while queue:
                 cost, currentX, currentY, path = heapq.heappop(queue)
-                print(path)
-                
                 gridVisit[currentX, currentY] += 1
                 
+                # print(path, cost)
+                
                 if currentX == endX and currentY == endY:
+                    print(cost)
                     return path
                 
                 for dx, dy in directions:
@@ -100,11 +94,15 @@ if __name__ == "__main__":
                     newY = currentY + dy
                     
                     if (newX >= 0 and newX < boardX) and (newY >= 0 and newY < boardY) and (newX, newY) not in visited:
-                        
                         if grid[newX][newY] != 'X':
-                            
                             newPath = path + [(newX, newY)]
-                            heapq.heappush(queue, (cost + int(grid[newX][newY]), newX, newY, newPath))  
+                            
+                            if (int(grid[newX][newY]) <= int(grid[currentX][currentY])):
+                                newCost = cost + 1
+                            else:
+                                newCost = cost + (int(grid[newX][newY]) - int(grid[currentX][currentY])) + 1
+                                
+                            heapq.heappush(queue, (newCost, newX, newY, newPath))  
                      
                 visited.add((currentX, currentY))        
             return None
